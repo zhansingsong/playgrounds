@@ -7,6 +7,7 @@
  * @return {[type]}           [description]
  */
 ;(function ($, window, document, undefined) {
+	'use strict';
 	var pluginName = 'navTab',
 		defaults = {
 

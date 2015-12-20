@@ -1,35 +1,74 @@
-// test jQuery plugin
 
-(function ($) {
+/**
+ * jQuery authoring template 
+ * @param  {object}   root     global variable[window|global]
+ * @param  {function} factory  plugin creator
+ * @return {object}            plugin
+ */
+//  here is the semicolon to avoid errors ,when plugin is compressed with other plugins or libraries.
+;(function (root, factory) {
+    if (typeof define === "function" && define.amd) {
+    	// AMD. Register as an anonymous module.
+        define(["jquery", "underscore"], factory);
+    } else if (typeof exports === "object") {
+    	// Node/CommonJS style for Browserify
+        module.exports = factory(require("jquery"), require("underscore"));
+    } else {
+    	// Browser globals
+        root.Requester = factory(root.$, root._);
+    }
+}(this, function ($) {
 	// this ones for you 'uncle' Doug!
 	'use strict';
-	
-	// Plugin namespace definition
-	$.TestPlugin = function (options, element, callback)
-	{
+	/**
+	 * Main Plugin Class
+	 * @private
+     * @param {DOMNode} element The HTML DOM object to apply to plugin to
+     * @param {Object} options The options to configure the plugin with.
+	 * @param {Function} callback [description]
+	 */
+	function Plugin(options, element, callback){
+		// these are the plugin default settings that will be over-written by user settings
+		var defaults = {
+			'myBgColor': 'red',
+			'MyBorderColor': 'blue',
+			'boxHeight': '60px'
+		};
 		// wrap the element in the jQuery object
 		this.el = $(element);
 		// this is the namespace for all bound event handlers in the plugin
-		this.namespace = "testPlugin";
+		this.namespace = "Plugin";
 		// extend the settings object with the options, make a 'deep' copy of the object using an empty 'holding' object
-		this.opts = $.extend(true, {}, $.TestPlugin.settings, options);
+		this.settings = $.extend(true, {}, defaults, options);
 		this.init();
 		// run the callback function if it is defined
 		if (typeof callback === "function")
 		{
 			callback.call();
 		}
+        this.option = function (property, value) {
+			
+			if(typeof property === 'object') {
+        		options = $.extend(options, property);
+        	} else if(options[property]!==undefined) {
+                if(value===undefined) {
+                    return options[property];
+                } else {
+                    options[property] = value;
+                }
+            } else if (!property) {
+            	return options;   
+            } else {
+                $.error('Option ' + property + ' does not exist on jQuery.swipe.options');
+            }
+
+            return null;
+        }
 	};
-	
-	// these are the plugin default settings that will be over-written by user settings
-	$.TestPlugin.settings = {
-		'myBgColor': 'red',
-		'MyBorderColor': 'blue',
-		'boxHeight': '60px'
-	};
+
 	
 	// plugin functions go here
-	$.TestPlugin.prototype = {
+	Plugin.prototype = {
 		init : function() {
 			// going to need to define this, as there are some anonymous closures in this function.
 			// something interesting to consider
@@ -84,7 +123,7 @@
 	$.fn.testPlugin = function(options, callback) {
 		// define the plugin name here so I don't have to change it anywhere else. This name refers to the jQuery data object that will store the plugin data
 		var pluginName = "pluginName",
-			args;
+			args,;
 		
 		// if the argument is a string representing a plugin method then test which one it is
 		if ( typeof options === 'string' ) {
@@ -97,12 +136,14 @@
 				
 				// if there is no data for this instance of the plugin, then the plugin needs to be initialised first, so just call an error
 				if (!pluginInstance) {
-					alert("The plugin has not been initialised yet when you tried to call this method: " + options);
+					// alert("The plugin has not been initialised yet when you tried to call this method: " + options);
+					$.error("The plugin has not been initialised yet when you tried to call this method: " + options);
 					return;
 				}
 				// if there is no method defined for the option being called, or it's a private function (but I may not use this) then return an error.
 				if (!$.isFunction(pluginInstance[options]) || options.charAt(0) === "_") {
-					alert("the plugin contains no such method: " + options);
+					// alert("the plugin contains no such method: " + options);
+					$.error("The plugin contains no such method: " + options);
 					return;
 				}
 				// apply the method that has been called
@@ -136,4 +177,4 @@
 	};
 
 	// end of module
-})(jQuery);
+}));
