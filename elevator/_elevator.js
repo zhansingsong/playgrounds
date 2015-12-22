@@ -10,7 +10,6 @@
   }
 }(this, function($) {
   'use strict';
-  // 支持IE6
   if (typeof Array.prototype.indexOf !== 'function') {
       Array.prototype.indexOf = function(item) {
           for (var i = this.length - 1; i >= 0; i--) {
@@ -20,13 +19,6 @@
           }
       }
   }
-
-  function IETest(version) {
-      var b = document.createElement('b');
-      b.innerHTML = '<!--[if IE '+version+']><i></i><![endif]-->';
-      return b.getElementsByTagName('i').length === 1;
-  }
-
 
   /**
    * 可选配置项 options
@@ -57,6 +49,7 @@
     		this.element.hide();
     	}
     },
+    me = this, //缓存this变量
     meta = $(element).data('elevator-options');
     /**
      * @privileged method
@@ -78,8 +71,7 @@
     //定义私有方法——把私有方法定义在prototype中，确保每个实例共享一个副本。
     var _scrollTops = [],
     		_scrollTopsP;
-
-  
+    
     /**
      * lazy definition visible
      * @private _visible
@@ -100,19 +92,7 @@
           _ElevatorHide.call(this);
         }
       }
-    },
-      _supportIE6 = (function () {
-        if(IETest(6)){
-          //处理抖动
-          $('html').css({
-            "backgroundImage": "url(about:blank)",
-            "backgroundAttachment": "fixed"
-          });
-          return function (_sTop, _currentTop) {
-            this.element.css('top', parseInt(_sTop, 10)  + _currentTop + 'px');
-          }
-        }
-    })();
+    }
     /**
      * @private _buildCache
      * @description 缓存引用
@@ -218,8 +198,7 @@
      */
     function _bindEvents() {
         var _me = this,
-        		_speed = _getSettings.call(this, 'speed'),
-            _currentTop = this.element.offset().top;
+        		_speed = _getSettings.call(this, 'speed');
         this.element.on('click.' + this.namespace, 'li a', function(e) {
             var _index =  _me.fbtns.index($(this));
             if(_index === _me.len - 1){
@@ -232,7 +211,6 @@
         $(window).on('scroll.' + this.namespace, function() {
             var _sTop = $(this).scrollTop(),
                 _index = _getLocation.call(_me, _sTop);
-            _supportIE6 && _supportIE6.call(_me, _sTop, _currentTop);
             _visible.call(_me, _sTop);
             _setBtns.call(_me, _index);
         });
@@ -303,11 +281,11 @@
               var pluginInstance = $.data(this, PLUGIN_NS);
 
               if (!pluginInstance) {
-                  $.error('该插件还没有初始化: ' + options);
+                  $.error("The plugin has not been initialised yet when you tried to call this method: " + options);
                   return;
               }
               if (!$.isFunction(pluginInstance[options])) {
-                  $.error('抱歉，该插件没有这个: '  + options + '方法');
+                  $.error("The plugin contains no such method: " + options);
                   return;
               } else {
                   returnVal = pluginInstance[options].apply(pluginInstance, args);
