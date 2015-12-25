@@ -136,7 +136,8 @@
         var value = this.settings[key], //如果不用me, 而使用this,访问的是global window,原因当调用时, this相当于AO(acitve object),而AO在调用随函数执行完后，便变为空即null，此时浏览器会将其转换为global。
             requiredKey = {
                 cFloors: true,
-                cBtns: true
+                cBtns: true,
+                cBacktop: true
             };
         if ( !value  && requiredKey[key]) {
             $.error('使用该插件必须提供 “' + key + '” 的值，不能为' + value);
@@ -167,7 +168,6 @@
      * @description 缓存模块的scrollTop值
      */
     function _saveScrollTop() {
-      debugger;
         this.floor.each(function() {
             _scrollTops.push($(this).offset().top);
         });
@@ -197,12 +197,12 @@
      * @private _setLocation
      * @description 设置scrollTop
      */
-    function _setLocation(index) {
+    function _setLocation(index, _speed) {
         if (index === -1) {
             return;
         }
         // $(window).scrollTop(_scrollTopsP[index]);
-        var _speed = _getSettings.call(this, 'speed');
+        // var _speed = _getSettings.call(this, 'speed');
         $('html, body').animate({scrollTop: _scrollTopsP[index]}, _speed);
     }
     /**
@@ -228,7 +228,7 @@
             		$('html, body').animate({scrollTop: 0}, _speed);
             		return;
             }
-            _setLocation.call(_me, _index);
+            _setLocation.call(_me, _index, _speed);
         });
         $(window).on('scroll.' + this.namespace, function() {
             var _sTop = $(this).scrollTop(),
