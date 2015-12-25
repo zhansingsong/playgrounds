@@ -167,7 +167,7 @@
     <script type="text/javascript" src="elevator.js"></script>
     <script>
     $('#elevator').elevator({
-        cFloors: $('#elevator .js-floor'),
+        cFloors: $('.js-floor'),
         cBtns: $('#elevator .js-btn'),
         cSelected: 'selected',
         visible: {isHide: 'yes', numShow: 400},
@@ -178,9 +178,9 @@
             $('#elevator').slideUp(400);
         }
     }).elevator('getDefaults');
-    $('#backtop').elevator({
-        cBtns: $('#backtop .js-btn')
-    })
+    // $('#backtop').elevator({
+    //     cBtns: $('#backtop .js-btn')
+    // });
     </script>
 </body>
 </html>

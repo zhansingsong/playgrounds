@@ -167,6 +167,7 @@
      * @description 缓存模块的scrollTop值
      */
     function _saveScrollTop() {
+      debugger;
         this.floor.each(function() {
             _scrollTops.push($(this).offset().top);
         });
@@ -220,7 +221,7 @@
         var _me = this,
         		_speed = _getSettings.call(this, 'speed'),
             _currentTop = this.element.offset().top;
-        this.element.on('click.' + this.namespace, 'li a', function(e) {
+        this.fbtns.on('click.' + this.namespace, function(e) {
             var _index =  _me.fbtns.index($(this));
             if(_index === _me.len - 1){
             		// _index = 0;
