@@ -34,6 +34,7 @@
 		var _defaults = {
 				cFloors: null,
 				cBtns: null,
+				cBacktop: null,
 				cSelected: '',
 			  visible: {isHide: 'no', numShow: 0},
 				speed: 400,
@@ -88,8 +89,27 @@
   	    }
   	})();
 
-  	function _initPattern() {
+  	function _initPattern(options) {
+  			var _patternFields = {
+  				cFloors: 'cFloors' in options,
+  				cBtns: 'cBtns' in options,
+  				cBacktop: 'cBacktop' in options
+  			};
+  			// support 3 patterns
+  			if(_patternFields.cFloors && _patternFields.cBtns && _patternFields.cBacktop) {
+  				_scrollTopArr
+  			
 
+  			} else if(_patternFields.cFloors && _patternFields.cBtns) {
+
+  			} else if(_parent.cBacktop) {
+
+  			} else {
+  				$.error('you provide at least one of "cBacktop" , "cFloors + cBtns" or "cFloors + cBtns + cBacktop"')
+  			}
+  			this.floor = _patternFields.cFloors ? _getSettings.call(this, 'cFloors') : null;
+   			this.fbtns = _patternFields.fbtns ?  _getSettings.call(this, 'cBtns') : null;
+   			this.backtop = _patternFields.cBacktop ? _getSettings.call(this, 'cBacktop') : null;
   	}
 
 	  function _getSettings(key) {
@@ -107,7 +127,7 @@
 	          return _value;
 	      }
 	    } else {
-	    	 		$.error('the settings contains no such “' + key + '” option!');
+	    			$.error('the settings contains no such “' + key + '” option!');
 	    }
 	  }
 
