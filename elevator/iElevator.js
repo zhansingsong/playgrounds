@@ -19,35 +19,40 @@
           }
       }
   }
-
+  // detection IE6
   function IETest(version) {
       var b = document.createElement('b');
-      b.innerHTML = '<!--[if IE '+version+']><i></i><![endif]-->';
+      b.innerHTML = '<!--[if IE ' + version + ']><i></i><![endif]-->';
       return b.getElementsByTagName('i').length === 1;
   }
-
+  /**
+   * iElevator constructor
+   * @param {object} options  configuration
+   * @param {DOM}    element  DOM node
+   */
   function iElevator(options, element) {
 		// cache for context
 		this.element = $(element);
 		this.namespace = 'iElevator';
 		// defaults
 		var _defaults = {
-				cFloors: null,
-				cBtns: null,
-				cBacktop: null,
-				cSelected: '',
+				floors: null,
+				btns: null,
+				backtop: null,
+				selected: '',
 			  visible: {isHide: 'no', numShow: 0},
 				speed: 400,
-				show: function () {
-					this.element.show();
+				show: function (me) {
+					me.element.show();
 					},
-				hide: function () {
-					this.element.hide();
+				hide: function (me) {
+					me.element.hide();
 					}
 				},
 				meta = this.element.data('iElevator-options') || {};
-		// configurations extended
+		// configurations extended,  priority: _defaults < options < meta
 		this.settings = $.extend({}, _defaults, options, meta);
+    this.init(options);
   }
 
   iElevator.prototype = (function() {
@@ -70,9 +75,9 @@
 	  	    }
 	  	    _visible = function (_sTop) {
 	  	    if(_sTop >= _numShow) {
-	  	      _ElevatorShow.call(this);
+	  	      _ielevatorShow.call(this);
 	  	    } else {
-	  	      _ElevatorHide.call(this);
+	  	      _ielevatorHide.call(this);
 	  	    }
 	  	  }
   		},
@@ -89,27 +94,32 @@
   	    }
   	})();
 
+
+
   	function _initPattern(options) {
   			var _patternFields = {
-  				cFloors: 'cFloors' in options,
-  				cBtns: 'cBtns' in options,
-  				cBacktop: 'cBacktop' in options
+  				floors: ('floors' in options),
+  				btns: ('btns' in options),
+  				backtop: ('backtop' in options)
   			};
+
+        if(_patternFields.floors) {
+          this.floors = _getSettings.call(this, 'floors');
+            this.floors.each(function() {
+                _scrollTopArr.push($(this).offset().top);
+            });
+        }
+        this.btns = _patternFields.btns ?  _getSettings.call(this, 'btns') : null;
+        if(_patternFields.backtop) {
+          this.backtop = _getSettings.call(this, 'backtop');
+            _scrollTopArr.push(0);
+        }
+        _STARR = _scrollTopArr.slice();
+       
   			// support 3 patterns
-  			if(_patternFields.cFloors && _patternFields.cBtns && _patternFields.cBacktop) {
-  				_scrollTopArr
-  			
-
-  			} else if(_patternFields.cFloors && _patternFields.cBtns) {
-
-  			} else if(_parent.cBacktop) {
-
-  			} else {
+  			if(!(_patternFields.floors && _patternFields.btns && _patternFields.backtop) && !(_patternFields.floors && _patternFields.btns) && !(_patternFields.backtop)) {
   				$.error('you provide at least one of "cBacktop" , "cFloors + cBtns" or "cFloors + cBtns + cBacktop"')
   			}
-  			this.floor = _patternFields.cFloors ? _getSettings.call(this, 'cFloors') : null;
-   			this.fbtns = _patternFields.fbtns ?  _getSettings.call(this, 'cBtns') : null;
-   			this.backtop = _patternFields.cBacktop ? _getSettings.call(this, 'cBacktop') : null;
   	}
 
 	  function _getSettings(key) {
@@ -131,26 +141,26 @@
 	    }
 	  }
 
-	  function _elevatorShow() {
-	  		_getSettings.call(this, 'show')();
+	  function _ielevatorShow() {
+	  		_getSettings.call(this, 'show')(this);
 	  }
 
-	  function _elevatorHide() {
-	  		_getSettings.call(this, 'hide')();
+	  function _ielevatorHide() {
+	  		_getSettings.call(this, 'hide')(this);
 	  }
 
 	  function _getLocation(num) {
 	      var _num = parseInt(num, 10),
-	          _index = _scrollTops.indexOf(_num);
+	          _index = _scrollTopArr.indexOf(_num);
 	      if(_index > -1) {
 	      	return _index;
 	      }
-	      _scrollTops.push(_num);
-	      _scrollTops.sort(function(A, B) {
+	      _scrollTopArr.push(_num);
+	      _scrollTopArr.sort(function(A, B) {
 	              return A - B;
 	          });
-	      _index = _scrollTops.indexOf(_num);
-	      _scrollTops.splice(_index, 1);
+	      _index = _scrollTopArr.indexOf(_num);
+	      _scrollTopArr.splice(_index, 1);
 	      return (_index - 1);
 	  }
 
@@ -159,29 +169,30 @@
 	          return;
 	      }
 	      // $(window).scrollTop(_scrollTopsP[index]);
-	      // var _speed = _getSettings.call(this, 'speed');
-	      $('html, body').animate({scrollTop: _scrollTopsP[index]}, _speed);
+	      $('html, body').animate({scrollTop: _STARR[index]}, _speed);
 	  }
 
     function _setBtns(index) {
-  		var _selected = _getSettings.call(this, 'cSelected');
-  	  this.fbtns.removeClass(_selected).eq(index).addClass(_selected);
+  		var _selected = _getSettings.call(this, 'selected');
+  	  this.btns && this.btns.removeClass(_selected).eq(index).addClass(_selected);
     }
 
     function _bindEvents() {
         var _me = this,
         		_speed = _getSettings.call(this, 'speed'),
-            _currentTop = this.element.offset().top;
-        this.fbtns && this.fbtns.on('click.' + this.namespace, function(e) {
-            var _index =  _me.fbtns.index($(this));
-            if(_index === _me.len - 1){
-            		// _index = 0;
-            		$('html, body').animate({scrollTop: 0}, _speed);
-            		return;
-            }
+            _currentTop = this.element.offset().top,
+            _len = _STARR.length;
+
+        this.btns && this.btns.on('click.' + this.namespace, function(e) {
+            var _index =  _me.btns.index($(this));
             _setLocation.call(_me, _index, _speed);
         });
-        this.backtop && this.backtop.on('')
+
+        this.backtop && this.backtop.on('click.' + this.namespace, function(e) {
+            var _index = _len - 1;
+            _setLocation.call(_me, _index, _speed);
+        });
+
         $(window).on('scroll.' + this.namespace, function() {
             var _sTop = $(this).scrollTop(),
                 _index = _getLocation.call(_me, _sTop);
@@ -201,16 +212,17 @@
         // clear cache data
         $.removeData(this);
     }
+    function _init(options) {
+      _initPattern.call(this, options);
+      _visible.call(this); 
+      _bindEvents.call(this);
+    }
 
     return {
         // ensure constructor point to iElevator(constuctor === iElevator)
         constructor: iElevator,
-
-        buildCache: function(element) {
-					this._(_buildCache)(element);
-        },
-        init: function() {
-          this._(_init)();
+        init: function(options) {
+          this._(_init)(options);
         },
         destory: function () {
         	console.log('destory');
@@ -220,7 +232,7 @@
             return this._(_getSettings)(key);
         },
         _: function(callback) {
-            //缓存this
+            //cache this
             var self = this;
             return function( /*argument*/ ) {
                 return callback.apply(self, arguments);
@@ -230,8 +242,8 @@
 
   })();
 
-	$.fn.elevator = function(options) {
-	    var PLUGIN_NS = "elevatorPlugin",
+	$.fn.ielevator = function(options) {
+	    var PLUGIN_NS = "ielevatorPlugin",
 	        args,
 	        returnVal;
 
@@ -241,11 +253,11 @@
 	            var pluginInstance = $.data(this, PLUGIN_NS);
 
 	            if (!pluginInstance) {
-	                $.error('该插件还没有初始化: ' + options);
+	                $.error("The plugin has not been initialised yet when you tried to call this method: " + options);
 	                return;
 	            }
 	            if (!$.isFunction(pluginInstance[options])) {
-	                $.error('抱歉，该插件没有这个: '  + options + '方法');
+	                $.error("The plugin contains no such method: " + options);
 	                return;
 	            } else {
 	                returnVal = pluginInstance[options].apply(pluginInstance, args);
@@ -266,7 +278,7 @@
 	            if (pluginInstance) {
 	                pluginInstance.option(options);
 	            } else {
-	                $.data(this, PLUGIN_NS, new Elevator(options, this));
+	                $.data(this, PLUGIN_NS, new iElevator(options, this));
 	            }
 	        });
 	    }
