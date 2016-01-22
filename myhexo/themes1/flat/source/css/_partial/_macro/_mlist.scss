@@ -1,0 +1,41 @@
+.mlist {
+	margin-bottom: 10px;
+    .title {
+        height: 20px;
+        line-height: 20px;
+        font-size: 16px;
+        padding: 5px 0;
+        color: #8E8071;
+        border-bottom: 1px dotted #8E8071;
+        margin-bottom: 10px;
+        h3 {
+           font-weight: 700;
+        }
+    }
+    .list {
+        li {
+            float: left;
+            margin-bottom: 6px;
+            font-family: $yfont;
+            a,
+            i {
+                float: left
+            }
+            i{
+            	font-size: 12px;
+            	margin-right: 10px;
+            }
+            a{
+            	width: 174px;
+            	color: #868686;
+            	&:hover{
+            		color: #0C924B;
+            		text-decoration: underline;
+            		i{
+            			color: #0C924B;
+            		}
+            	}
+            }
+        }
+    }
+}

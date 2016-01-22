@@ -1,0 +1,18 @@
+{
+  "name": "elevator",
+  "version": "1.0.0",
+  "description": "elevator",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "elevator"
+  ],
+  "devDependencies": {
+      "grunt": "~0.4.5",
+      "grunt-contrib-uglify": "~0.5.0"
+    },
+  "author": "zhansingsong",
+  "license": "MIT"
+}

@@ -1,0 +1,57 @@
+.centerH{
+	  margin-right: auto;
+    margin-left: auto;
+}
+
+.u-cf:after {
+    display: block;
+    clear: both;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    content: ".";
+}
+
+.u-cf {
+    zoom: 1;
+}
+
+.u-cfli li:after {
+    @extend .u-cf:after;
+}
+
+.u-cfli li {
+    @extend .u-cf;
+}
+
+.u-ib {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+.u-fl {
+    float: left;
+}
+
+.u-fr {
+    float: right;
+}
+
+.u-hide{
+    display: none;
+}
+.u-show{
+    display: block;
+}
+.u-ellipsis{
+    overflow:hidden;
+    word-wrap:normal;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+.u-linebreak{
+    overflow: hidden;
+    word-wrap: break-word; 
+    word-break:break-all;
+}

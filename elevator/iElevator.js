@@ -34,6 +34,7 @@
 		// cache for context
 		this.element = $(element);
 		this.namespace = 'iElevator';
+
 		// defaults
 		var _defaults = {
 				floors: null,
@@ -58,7 +59,8 @@
   iElevator.prototype = (function() {
   	// caching scrollTop(value) of each module
   	var _scrollTopArr = [],
-  			_STARR;
+  			_STARR,
+        _refArr;
 
   	/**
   	 * lazy definition visible
@@ -94,8 +96,6 @@
   	    }
   	})();
 
-
-
   	function _initPattern(options) {
   			var _patternFields = {
   				floors: ('floors' in options),
@@ -108,13 +108,27 @@
             this.floors.each(function() {
                 _scrollTopArr.push($(this).offset().top);
             });
+          this.btns = _patternFields.btns ?  _getSettings.call(this, 'btns') : null;
         }
-        this.btns = _patternFields.btns ?  _getSettings.call(this, 'btns') : null;
+  
         if(_patternFields.backtop) {
           this.backtop = _getSettings.call(this, 'backtop');
-            _scrollTopArr.push(0);
+          // _scrollTopArr.push(0);
         }
+
+        if (this.btns) {
+            if (this.backtop) {
+                _refArr = this.btns.add(this.backtop);
+            } else {
+                _refArr = this.btns;
+            }
+        } else {
+            _refArr = this.backtop;
+        }
+
+
         _STARR = _scrollTopArr.slice();
+        _STARR.push(0);
        
   			// support 3 patterns
   			if(!(_patternFields.floors && _patternFields.btns && _patternFields.backtop) && !(_patternFields.floors && _patternFields.btns) && !(_patternFields.backtop)) {
@@ -132,12 +146,12 @@
 	              cBacktop: true
 	          };
 	      if ( !_value  && requiredKey[key]) {
-	          $.error('the “' + key + '” is required，not ' + _value);
+	          $.error('the "' + key + '" is required, not ' + _value);
 	      } else {
 	          return _value;
 	      }
 	    } else {
-	    			$.error('the settings contains no such “' + key + '” option!');
+	    			$.error('the settings contains no such ¡°' + key + '¡± option!');
 	    }
 	  }
 
@@ -174,7 +188,8 @@
 
     function _setBtns(index) {
   		var _selected = _getSettings.call(this, 'selected');
-  	  this.btns && this.btns.removeClass(_selected).eq(index).addClass(_selected);
+      // this.btns && this.btns.removeClass(_selected).eq(index).addClass(_selected);
+  	  _refArr && _refArr.removeClass(_selected).eq(index).addClass(_selected);
     }
 
     function _bindEvents() {
@@ -182,20 +197,14 @@
         		_speed = _getSettings.call(this, 'speed'),
             _currentTop = this.element.offset().top,
             _len = _STARR.length;
-
-        this.btns && this.btns.on('click.' + this.namespace, function(e) {
-            var _index =  _me.btns.index($(this));
-            _setLocation.call(_me, _index, _speed);
-        });
-
-        this.backtop && this.backtop.on('click.' + this.namespace, function(e) {
-            var _index = _len - 1;
+        _refArr.on('click.' + this.namespace, function(e) {
+            var _index = _refArr.index($(this));
             _setLocation.call(_me, _index, _speed);
         });
 
         $(window).on('scroll.' + this.namespace, function() {
-            var _sTop = $(this).scrollTop(),
-                _index = _getLocation.call(_me, _sTop);
+            var _sTop = $(this).scrollTop();
+             var   _index = _getLocation.call(_me, _sTop);
             _supportIE6 && _supportIE6.call(_me, _sTop, _currentTop);
             _visible.call(_me, _sTop);
             _setBtns.call(_me, _index);

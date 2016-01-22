@@ -1,0 +1,8 @@
+.container{
+	@extend .centerH;
+	width: 100%;
+	max-width: $swidth;
+	min-width: $sminwidth;
+	// debugger
+	// background: $dbg;
+}

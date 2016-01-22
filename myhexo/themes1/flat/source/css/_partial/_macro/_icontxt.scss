@@ -1,0 +1,18 @@
+.icontxt{
+	font-size: 14px;
+	color: #ABABAB;
+	a{
+		color: #ABABAB;
+		&:hover{
+			color: #5B9A7A;
+			text-decoration: underline;
+		}
+	}
+	dt,
+	dd{
+		float: left;
+	}
+	i{
+		font-size: 14px;
+	}
+}

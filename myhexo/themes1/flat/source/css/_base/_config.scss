@@ -1,0 +1,54 @@
+
+@charset "UTF-8";
+
+/**
+ * @description: site settings
+ * @author: zhanxingxiang
+ * @date: 2015.11.10
+ */
+
+/**
+ * font scheme
+ */
+$yfont: "\5FAE\8F6F\96C5\9ED1";//雅黑
+$hfont: "\9ED1\4F53";//黑体
+$sfont: "\5B8B\4F53";//宋体
+
+/**
+ * color scheme
+ */
+$bgcolor: #F5F5F5;
+$lwcolorA: #EFEFEF; //background
+$lwcolorB: #DFDFDF; // border
+$lwcolorC: #999; // font
+$lwcolorD: #7D7D7D; 
+$lwcolorE: #333;
+
+$dycolor: #FDCD03;// dark yellow color
+$ycolor: #FDCD00;// yellow color
+
+$ocolor: #FFA200;
+$locolorA: #FF6600;
+$locolorB: #FC5300; // theme color
+
+$bcolor: #222; // black color
+
+$red: #F00;
+
+/**
+ * font color
+ */
+$fcolor: #8e8071;
+
+/**
+ * site dimension
+ */
+$swidth: 1000px;
+$sminwidth: 320px;
+
+/**
+ * debugger utilities
+ */
+$dbg: rgba(120, 197, 48, 0.3);
+$dborder: 1px solid #BA1212;
+$doutline: 1px solid #F94E0B;

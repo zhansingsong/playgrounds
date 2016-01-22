@@ -1,0 +1,134 @@
+html,
+body,
+div,
+span,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+del,
+dfn,
+em,
+img,
+small,
+strong,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+input,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+button,
+nav,
+section,
+summary {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+blockquote,
+q {
+    quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+a,
+button {
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a {
+    outline: none;
+}
+
+a:focus {
+    outline: 0;
+}
+
+body {
+    color: $bcolor;
+    background: $bgcolor;
+    // font: 12px/1.5 "\5B8B\4F53", Arial, sans-serif;
+    font: 12px/1.5 Lato, "Microsoft Jhenghei", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+
+}
+
+img {
+    display: block;
+    border: 0 none;
+}
+a {
+    color: $bcolor;
+}
