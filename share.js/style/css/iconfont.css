@@ -16,10 +16,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 .icon-socialtumblrcircle:before { content: "\e600"; }
-.icon-facebook:before { content: "\e601"; }
 .icon-gongnengyewangyiweibofanshe:before { content: "\e604"; }
+.icon-tengxunweiboyin:before { content: "\e608"; }
 .icon-linkedin:before { content: "\e607"; }
-.icon-tengxunweibo:before { content: "\e608"; }
+.icon-facebook3:before { content: "\e601"; }
 .icon-weibo:before { content: "\e609"; }
 .icon-twitter:before { content: "\e60a"; }
 .icon-googleplus3:before { content: "\e60b"; }
@@ -29,3 +29,5 @@
 .icon-zone:before { content: "\e610"; }
 .icon-douban:before { content: "\e612"; }
 .icon-wechat:before { content: "\e613"; }
+
+
