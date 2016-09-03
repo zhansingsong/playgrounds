@@ -10,18 +10,17 @@
 ;(function(w) {
     function Share(options) {
     	var defaults = {
-    		url: location.href,
-    		host: location.origin,
-    		description: this.getmeta('description'),
-    		image: this.getimg(),
-    		mobileSites: [],
-    		sites: ['weibo','qq','wechat','tencent','douban','qzone','linkedin','diandian','facebook','twitter','google'],
-    		disabled: [],
-    		initialized: false
+            url         : location.href,
+            host        : location.origin,
+            description : this.getmeta('description'),
+            image       : this.getimg(),
+            mobileSites : [],
+            sites       : ['weibo','qq','wechat','tencent','douban','qzone','linkedin','diandian','facebook','twitter','google'],
+            disabled    : [],
+            initialized : false
     	};
-    	this.defaults = defaults;
-    	this.templates = templates;
-    	
+        this.defaults  = defaults;
+        this.templates = templates;
 
     }
     Share.prototype = (function(){
@@ -44,8 +43,8 @@
     	 */
     	function _extend(){
     		var _arg,
-    				_prop,
-    				_child = {};
+    			  _prop,
+    			  _child = {};
     		for(_arg = 0; _arg < arguments.length; _arg++) {
     			for(_prop in arguments[_arg]){
     				if(arguments[_arg].hasOwnProperty(_prop)){

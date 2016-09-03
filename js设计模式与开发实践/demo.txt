@@ -1,0 +1,215 @@
+var currying = function( fn ) {
+  var args = [];
+  return function(){
+    if (arguments.length === 0){
+      return fn.apply(this, args);
+    } else {
+      [].push.apply(args, arguments);
+      return arguments.callee;
+    }
+  }
+}
+
+var cost = (function(){
+  var money = 0;
+  return function(){
+    for(var i = 0, l = arguments.length; i < l; i++){
+       money += arguments[i];
+    }
+    return money;
+  }
+})();
+var cost = currying(cost);
+
+cost(100);
+cost(200);
+alert(cost());
+
+
+var throttle = function (fn, interval) {
+  var __self = fn,
+      timer,
+      firstTime = true;
+  return function () {
+    var args = arguments,
+        __me = this;
+    if(firstTime) {
+      __self.apply(__me, args);
+      return firstTime = false;
+    }
+    if(timer) {
+      return false;
+    }
+    timer = setTimeout(function(){
+      clearTimeout(timer);
+      timer = null;
+      __self.apply(__me, args);
+    }, interval || 1000);
+  };
+};
+
+window.onresize = throttle(function(){console.log(1);}, 500);
+
+
+
+var arr = [];
+for (var i = 1; i <= 1000; i++) {
+  arr.push(i);
+}
+console.time('#1');
+var renderFriendList = function(data) {
+  for (var i = 0, l = data.length; i < l; i++) {
+    var div = document.createElement('div');
+    div.innerHTML = i;
+    document.getElementById('cnter').appendChild(div);
+  }
+}
+renderFriendList(arr);
+console.timeEnd('#1');
+
+var div = document.createElement('div');
+div.innerHTML = '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@';
+document.getElementById('cnter').appendChild(div);
+
+var timeChunk = function(arr, fn, count) {
+  var obj,
+    t;
+  var len = arr.length;
+  var start = function() {
+
+    for (var i = 0; i < Math.min(count || 1, arr.length); i++) {
+      var obj = arr.shift();
+      fn(obj);
+    }
+  }
+  return function() {
+    t = setInterval(function() {
+      if (arr.length === 0) {
+        return clearInterval(t);
+      }
+      start();
+    }, 200);
+  }
+}
+
+console.time('#2');
+var renderFriendList2 = timeChunk(arr, function(n) {
+  var div = document.createElement('div');
+  div.innerHTML = n;
+  document.getElementById('cnter').appendChild(div);
+}, 10);
+renderFriendList2();
+console.timeEnd('#2');
+
+<input type="checkbox" id="1">1
+<input type="checkbox" id="2">2
+<input type="checkbox" id="3">3
+<input type="checkbox" id="4">4
+<input type="checkbox" id="5">5
+<input type="checkbox" id="6">6
+var synchronousFile = function(id) {
+	console.log('开始同步文件，id为：'+ id);
+}
+var proxySynchronousFile = (function(){
+	var cache = [],
+  		count = 0,
+      timer;
+      
+  return function(id) {
+  	cache.push(id);
+    ++count;
+    if(timer){
+     return;
+    }
+    timer = setTimeout(function(){
+    	synchronousFile(cache.join(', '));
+      console.log(count);
+      clearTimeout(timer);
+      timer = null;
+      count=0;
+      cache.length = 0;
+      
+    }, 2000);
+  }
+})();
+var checkboxes = document.getElementsByTagName('input');
+for(var i = 0, c; c = checkboxes[i++];){
+	c.onclick = function(){
+  	if(this.checked = true){
+    		proxySynchronousFile(this.id);
+    }
+  }
+}
+
+
+
+var Folder = function(name) {
+  this.name = name;
+  this.files = [];
+  this.parent = null;
+}
+Folder.prototype.add = function(file) {
+  file.parent = this;
+  this.files.push(file);
+}
+Folder.prototype.scan = function() {
+  console.log('开始扫描文件夹： ' + this.name);
+  for (var i = 0, file, files = this.files; file = files[i++];) {
+    file.scan();
+  }
+}
+Folder.prototype.remove = function(){
+	if(!this.parent){
+  	return;
+  }
+  for(var files = this.parent.files, len = files.length - 1; len >= 0; len--){
+  	var file = files[len];
+    if(file === this){
+    	files.splice(len, 1);
+    }
+  }
+}
+var File = function(name) {
+  this.name = name;
+	this.parent = null;
+}
+File.prototype.add = function() {
+  throw new Error('文件下面不能添加文件');
+}
+File.prototype.scan = function() {
+  console.log('开始扫描文件：' + this.name);
+}
+File.prototype.remove = function(){
+	if(!this.parent){
+  	return;
+  }
+  for(var files = this.parent.files, len = files.length - 1; len >= 0; len--){
+  	var file = files[len];
+    if(file === this){
+    	files.splice(len, 1);
+    }
+  }
+}
+
+var folder = new Folder('zxx'),
+    folder1 = new Folder('pics'),
+    folder2 = new Folder('movies');
+var file1 = new File('美女图片'),
+    file2 = new File('搞笑图片'),
+    file3 = new File('风景图片'),
+    file4 = new File('美人鱼'),
+    file5 = new File('魔戒三部曲'),
+    file6 = new File('javascript高级程序设计');
+folder.add(folder1);
+folder.add(folder2);
+folder.add(file6);
+folder1.add(file1);
+folder1.add(file2);
+folder1.add(file3);
+folder2.add(file4);
+folder2.add(file5);
+
+folder.scan();
+folder2.remove();
+folder.scan();
+

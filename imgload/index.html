@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>LOADIMG</title>
+	<style>
+		html, body{
+			margin: 0;
+			padding: 0;
+			width: 100%;
+		}
+		img{
+			width: 60%;
+		}
+	</style>
+</head>
+<body>
+	<a href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=http://www.gretheer.com&desc=%E8%BF%99%E4%B8%AAQQ%E5%88%86%E4%BA%ABAPI%E6%8E%A5%E5%8F%A3%E5%BE%88%E5%A5%BD%E7%94%A8&title=%E8%BF%99%E4%B8%AAQQ%E5%88%86%E4%BA%ABAPI%E6%8E%A5%E5%8F%A3%E5%BE%88%E5%A5%BD%E7%94%A8&pics=http://source.gretheer.com/logo3.png&site=%E5%BF%99%E7%A2%8C%E7%9A%84%E6%9D%BE%E9%BC%A0" target="_blank">dddd</a>
+</body>
+<script>
+	var myImg = (function(){
+		var imgNode = document.createElement('img');
+		document.body.appendChild(imgNode);
+		return{
+			setSrc: function(src){
+				imgNode.src = src;
+			}
+		}
+	})();
+	var proxyImg = (function(){
+		var img = new Image();
+		img.onload = function(){
+			myImg.setSrc(this.src);
+		}
+		return{
+			setSrc: function(src){
+				myImg.setSrc('https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif');
+				img.src = src;
+			}
+		}
+	})();
+	proxyImg.setSrc('http://cdn.bigbangfish.com/beautiful/beautiful-scenery/beautiful-scenery-3.jpg');
+</script>
+</html>

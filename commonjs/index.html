@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>commonjs</title>
+</head>
+<body>
+	
+</body>
+<script>
+	
+	function require(p){
+	  var path = require.resolve(p);
+	  var mod = require.modules[path];
+	  if (!mod) throw new Error('failed to require "' + p + '"');
+	  if (!mod.exports) {
+	    mod.exports = {};
+	    mod.call(mod.exports, mod, mod.exports, require.relative(path));
+	  }
+	  return mod.exports;
+	}
+
+	require.modules = {};
+
+	require.resolve = function (path){
+	  var orig = path;
+	  var reg = path + '.js';
+	  var index = path + '/index.js';
+	  return require.modules[reg] && reg
+	    || require.modules[index] && index
+	    || orig;
+	};
+
+	require.register = function (path, fn){
+	  require.modules[path] = fn;
+	};
+
+	require.relative = function (parent) {
+	  return function(p){
+			debugger;
+
+	    if ('.' != p.charAt(0)) return require(p);
+	    var path = parent.split('/');
+	    var segs = p.split('/');
+	    path.pop();
+
+	    for (var i = 0; i < segs.length; i++) {
+	      var seg = segs[i];
+	      if ('..' == seg) path.pop();
+	      else if ('.' != seg) path.push(seg);
+	    }
+
+	    return require(path.join('/'));
+	  };
+	};
+</script>
+<script>
+	require.register("./test1.js", function(module, exports, require){
+  module.exports = function(x) {
+    console.log(x);
+  };
+});
+	require.register("./test2.js", function(module, exports, require){
+	var test2 = require('./test1.js');
+  module.exports = function() {
+    console.log('test2');
+    test2('调用了test1');
+  };
+});
+
+var foo = require("./test2.js");
+foo();
+</script>
+</html>

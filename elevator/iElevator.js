@@ -187,6 +187,9 @@
 	  }
 
     function _setBtns(index) {
+      if(index < 0){
+        return;
+      }
   		var _selected = _getSettings.call(this, 'selected');
       // this.btns && this.btns.removeClass(_selected).eq(index).addClass(_selected);
   	  _refArr && _refArr.removeClass(_selected).eq(index).addClass(_selected);
@@ -284,11 +287,14 @@
 	        return this.each(function() {
 
 	            var pluginInstance = $.data(this, PLUGIN_NS);
-	            if (pluginInstance) {
-	                pluginInstance.option(options);
-	            } else {
-	                $.data(this, PLUGIN_NS, new iElevator(options, this));
-	            }
+              if(!pluginInstance){
+                $.data(this, PLUGIN_NS, new iElevator(options, this));
+              }
+	            // if (pluginInstance) {
+	            //     pluginInstance.option(options);
+	            // } else {
+	            //     $.data(this, PLUGIN_NS, new iElevator(options, this));
+	            // }
 	        });
 	    }
 	};

@@ -152,7 +152,7 @@
     </div>
     <div class="elevator" id="elevator" data-iElevator-options='{"cSelected": "custome-selected"}'>
         <ul>
-            <li><a href="javascript:;" class="js-btn">floor1</a></li>
+            <li><a href="javascript:;" class="">floor1</a></li>
             <li><a href="javascript:;" class="js-btn">floor2</a></li>
             <li><a href="javascript:;" class="js-btn">floor3</a></li>
             <li><a href="javascript:;" class="js-btn">floor4</a></li>
@@ -167,7 +167,7 @@
     $('#elevator').ielevator({
         floors: $('.js-floor'),
         btns: $('#elevator .js-btn'),
-        visible: {isHide: 'yes', numShow: 400},
+        visible: {isHide: 'no', numShow: 400},
         selected: 'selected',
         show: function() {
             $('#elevator').slideDown(400);

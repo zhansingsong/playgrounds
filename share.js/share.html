@@ -7,9 +7,8 @@
 </head>
 <body>
 
-<div class="iShare"></div>
-<div class="iShare iShare-24" style="position: absolute;top: 50%;margin-top: 50px;" data-sites="">
-<!-- 	<a href="#" class="iShare_qq"><i class="iconfont qq">&#xe60f;</i></a>
+<!-- <div class="iShare iShare-37"></div> -->
+<div class="iShare iShare-32" style="position: absolute;top: 50%;" data-sites="">
 	<a href="#" class="iShare_qzone"><i class="iconfont qzone">&#xe610;</i></a>
 	<a href="#" class="iShare_tencent"><i class="iconfont tencent" style="vertical-align: -2px;">&#xe608;</i></a>
 	<a href="#" class="iShare_weibo"><i class="iconfont weibo">&#xe609;</i></a>
@@ -22,19 +21,27 @@
 	<a href="#" class="iShare_googleplus"><i class="iconfont googleplus" style="vertical-align: -1px;">&#xe60b;</i></a>
 	<a href="#" class="iShare_linkedin"><i class="iconfont linkedin" style="vertical-align: 2px;">&#xe607;</i></a>
 	<a href="#" class="iShare_pinterest"><i class="iconfont pinterest" style="vertical-align: 0px;">&#xe60c;</i></a>
-	<a href="#" class="iShare_tumblr"><i class="iconfont tumblr" style="vertical-align: 2px;">&#xe600;</i></a> -->
-
+	<a href="#" class="iShare_tumblr"><i class="iconfont tumblr" style="vertical-align: 2px;">&#xe600;</i></a>
 </div>
 <script href="javascript:;" type="text/javascript">
 	var iShare_config = {
 		title: '我是詹兴祥',
 		description: '水淀粉及爱丽丝的房间里爱神的箭发牢骚',
 		url: 'http://www.baidu.com',
-		isAbroad: true,
+		isAbroad: false,
 		isTitle: true,
-		initialized: true
+		initialized: true,
+		WXoptions:{
+			evenType: 'click',
+			isTitleVisibility: true,
+			isTipVisibility: false,
+			tip: '这是一段测试文本',
+			title: '这是QR CODE',
+			bgcolor: '#924'
+		}
 	}
 </script>
-<script href="javascript:;" type="text/javascript" src="iShare.js"></script>
+<!-- <script href="javascript:;" type="text/javascript" src="iShare-tidy.js"></script> -->
+<script href="javascript:;" type="text/javascript" src="iShare_test.js"></script>
 </body>
 </html>
