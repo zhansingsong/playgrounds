@@ -1,5 +1,14 @@
 ;(function(win, pl) {
-		  var meta = {};
+		  var meta = {},
+		  		cbs = [],
+		  		element,
+		  		timer,
+		  		cstyle;
+
+		  var head = document.head ? document.head : document.getElementsByTagName('head')[0];
+		  // 增加CSS
+		  var _CSSSTR =  '@media (orientation: portrait) { .orientation{font-family:"portrait";} } @media (orientation: landscape) {  .orientation{font-family:"landscape";}}';
+		  // 订阅与发布
 		  var event = function(){
 		    var fnlist = {},
 		        listen,
@@ -42,12 +51,10 @@
 		      remove: remove
 		    }
 		  }();
-		  // 增加CSS
-		  var _CSSSTR =  '@media (orientation: portrait) { .orientation{font-family:"portrait";} } @media (orientation: landscape) {  .orientation{font-family:"landscape";}}';
+
 		  // automatically load css script
 		  function _loadStyleString(css) {
-	      var _style = document.createElement('style'),
-	          _head = document.getElementsByTagName('head')[0];
+	      var _style = document.createElement('style');
 	      _style.type = 'text/css';
 	      try{
 	          _style.appendChild(document.createTextNode(css));
@@ -55,73 +62,71 @@
 	          // lower IE support, if you want to know more about this to see http://www.quirksmode.org/dom/w3c_css.html
 	          _style.styleSheet.cssText = css;
 	      }
-	      _head.appendChild(_style);
+	      head.appendChild(_style);
 	      return _style;
 		  }
+		  // init orientation
+		  function initOrientation(){
+		  	var html = document.documentElement,
+		  			hstyle = window.getComputedStyle(html, null),
+		  			cssstr = '@media (orientation: portrait) { .orientationinit{font-family:"portrait" ' + hstyle['font-family'] + ';} } @media (orientationinit: landscape) {  .orientation{font-family:"landscape" ' + hstyle['font-family'] + ';}}';
+		  	_loadStyleString(orientationinit);
 
-		  var element, timer, cstyle;
-
-		  // createElement
-		  function createE(){
-		  	// 增加css
-		  	_loadStyleString(_CSSSTR);
-		  	// 创建新元素
-		  	element = document.createElement('i');
-		  	element.id = 'orientation';
-		  	element.className = 'orientation';
-		  	document.body.appendChild(element);
+		  	html.className = 'orientationinit' + html.className;
+		  	console.log(hstyle['font-family']);
 		  }
-
-		  createE();
-
+			initOrientation();
+		  // callback
 		  var resizeCB = function(){
-		  	cstyle = window.getComputedStyle(element, null);
-		  	if(cstyle['font-family'] === 'portrait'){
-		  		meta.current = 'portrait';
+		  	cstyle = window.getComputedStyle(head, null);
+		  	if(win.innerWidth > win.innerHeight){//初始化判断(@media需要)
+		  		meta.init = 'landscape';
+		  	  meta.current = 'landscape';
 		  	} else {
-		  		meta.current = 'landscape';
+		  		meta.init = 'portrait';
+		  	  meta.current = 'portrait';
 		  	}
 		  	return function(){
 		  		if(cstyle['font-family'] === 'portrait'){
 		  			if(meta.current !== 'portrait'){
 		  				meta.current = 'portrait';
-		  				event.trigger('M');
+		  				event.trigger('__orientationChange__', meta);
 		  			}
 		  		} else {
 		  			if(meta.current !== 'landscape'){
 		  				meta.current = 'landscape';
-		  				event.trigger('M');
+		  				event.trigger('__orientationChange__', meta);
 		  			}
 		  		}
 		  	}
-		  }
-
-		  var resizeCB1 = function(){
-		    if(win.innerWidth > win.innerHeight){
-		      meta.current = 'l';
-		    } else {
-		      meta.current = 'p';
-		    }
-		    return function(){
-		      if(win.innerWidth > win.innerHeight){
-		        if(meta.current !== 'l'){
-		          meta.current = 'l';
-		          event.trigger('M', meta);
-		        }
-		      } else {
-		        if(meta.current !== 'p'){
-		          meta.current = 'p';
-		          event.trigger('M', meta);
-		        }
-		      }
-		    }
 		  }();
-		  pl.event = event;
+		  // 监听
 		  win.addEventListener('resize', function(){
 		    timer && win.clearTimeout(timer);
 		    timer = win.setTimeout(resizeCB, 300);
 		  }, false);
-		  event.listen('M', function(event){  
-		    pl.on && pl.on.call(pl, event); 
+
+		  event.listen('__orientationChange__', function(event){
+		  	if(cbs.length === 0){
+		  		return false;
+		  	}
+		  	for(var i = 0, cb; cb = cbs[i++];){
+		  		if(typeof cb === 'function'){
+		  			cb.call(pl, event);
+		  		} else {
+		  			throw new Error('The accepted argument must be a function.');
+		  		}
+		  	}
 		  });
+		  // init
+		  (function(){
+		  	_loadStyleString(_CSSSTR);
+		  	head.className = 'orientation' + head.className;
+		  })();
+		  // 接口
+		  pl.orientation = meta;
+		  pl.event = event;
+		  pl.on = function(cb){
+		  	cbs.push(cb);
+		  }
 		})(window, window['pl'] || (window['pl'] = {}));
