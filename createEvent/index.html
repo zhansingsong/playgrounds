@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>createEvent</title>
+</head>
+<body>
+	<h1 id="tt">createEvent</h1>
+	<script>
+		var tt = document.getElementById('tt');
+		var event =  document.createEvent("MouseEvents");
+		event.initMouseEvent('click', true, true, document.defaultView);
+		tt.dispatchEvent(event);
+	</script>
+</body>
+</html>

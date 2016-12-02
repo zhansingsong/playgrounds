@@ -2,10 +2,11 @@
 ***
 pl是一个基于`@media`媒体查询实现的、轻量级的、横竖屏检测实用库，它让orientation detection更加可靠，更加easy。只要支持@media的浏览器都该都支持。
 ### usage
-将`pl`脚本（文件）引入`<head></head>`节点中
+将`pl`脚本（文件）引入`<head></head>`节点中。注意将其放置在样式文件之后(保证不影响html的font-family的设置)
 ```xml
 <head>
   <meta charset="utf-8">
+  <link rel="stylesheet" href="pl.css" type="text/css">
   <!-- 引入pl文件 -->
   <script type="text/javascript" src="js/library/pl.js"></script>
 </head>

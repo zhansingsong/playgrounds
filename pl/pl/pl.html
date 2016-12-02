@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>pl测试</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+	<style>
+	 html{
+	 	font-family: '\5FAE\8F6F\96C5\9ED1';
+	 }
+	 body{
+	 	background-color: #9ccc5c;
+	 }
+	  .title{
+	 		text-align: center;;
+			color: #111;
+			font-size: 40px;
+	  }
+		.container{
+			padding: 0 20px 20px;
+			margin: 0 10px;
+			border: 4px solid #000000;
+			border-radius: 12px;
+			background-color: #ececec;
+		}
+		.container-tt{
+			font-size: 24px;
+			border-bottom: 2px solid;
+			padding-bottom: 10px;
+		}
+		.container-wrapper{
+			color: #666;
+			padding: 0 8px;
+		}
+		.container-wrapper .tt{
+			font-weight: 700;
+			font-size: 18px;
+		}
+		.container-wrapper .val{
+			font-size: 18px;
+			color: #e0650b
+		}
+		.line{
+			border-bottom: 2px dotted #666;
+			margin: 10px 0;
+		}
+	</style>
+	 <script type="text/javascript" src="pl.js"></script>
+</head>
+<body>
+	<h1 class="title">PL测试</h1>
+	<div class="container">
+		<h2 class="container-tt">测试数据：</h2>
+		<div class="container-wrapper">
+			<p><span class="tt">初始化orientation：</span><span id="init" class="val"></span></p>
+			<p><span class="tt">当前orientation：</span><span id="current" class="val"></span></p>
+			<p class="line"></p>
+			<p><span class="tt">初始化font-family：</span><span id="ifont" class="val"></span></p>
+			<p><span class="tt">当前font-family：</span><span id="cfont" class="val"></span></p>
+		</div>
+
+	</div>
+	<script>
+		(function(win) {
+			var init = document.getElementById('init');
+			var current = document.getElementById('current');
+			var ifont = document.getElementById('ifont');
+			var cfont = document.getElementById('cfont');
+			
+			var getstyle =  window.getComputedStyle(document.documentElement, null);
+			init.innerHTML = win.pl.orientation.init;
+			current.innerHTML = win.pl.orientation.current;
+			ifont.innerHTML = win.pl.orientation.font;
+			cfont.innerHTML = getstyle['font-family'];
+			win.pl.on(function(event){
+				current.innerHTML = event.current;
+				cfont.innerHTML = getstyle['font-family'];
+			});
+		})(window);
+	</script>
+</body>
+</html>
