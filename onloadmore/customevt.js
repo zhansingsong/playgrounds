@@ -17,82 +17,9 @@
 (function(win, customevt) {
     var fireEvent,
         addEvent,
-        removeEvent;
-    // 针对IE8及以下版本，fireEvent|attachEvent|detachEvent只能使用如下事件名
-    var htmlEvents = {
-        "onbeforeeditfocus": true,
-        "onbeforeactivate": true,
-        "onbeforepaste": true,
-        "oncopy": true,
-        "onmouseleave": true,
-        "ondragstart": true,
-        "ondatasetcomplete": true,
-        "onscroll": true,
-        "onrowsdelete": true,
-        "onmouseup": true,
-        "onbeforecut": true,
-        "onclick": true,
-        "onmoveend": true,
-        "onkeypress": true,
-        "onlayoutcomplete": true,
-        "onmouseover": true,
-        "onfocusin": true,
-        "onrowenter": true,
-        "ondblclick": true,
-        "onmove": true,
-        "onpage": true,
-        "ondragleave": true,
-        "ondragend": true,
-        "onresize": true,
-        "onmouseenter": true,
-        "onresizeend": true,
-        "onmousemove": true,
-        "onresizestart": true,
-        "onerrorupdate": true,
-        "onkeyup": true,
-        "onbeforedeactivate": true,
-        "onmousedown": true,
-        "oncut": true,
-        "onrowsinserted": true,
-        "oncellchange": true,
-        "onfocus": true,
-        "onmouseout": true,
-        "ondragover": true,
-        "onrowexit": true,
-        "onfilterchange": true,
-        "onfocusout": true,
-        "onblur": true,
-        "ondragenter": true,
-        "ondrag": true,
-        "ondataavailable": true,
-        "onpropertychange": true,
-        "onreadystatechange": true,
-        "onselectstart": true,
-        "onpaste": true,
-        "onhelp": true,
-        "onload": true,
-        "ondeactivate": true,
-        "onbeforeupdate": true,
-        "onafterupdate": true,
-        "onkeydown": true,
-        "oncontrolselect": true,
-        "oncontextmenu": true,
-        "onbeforecopy": true,
-        "onmovestart": true,
-        "onactivate": true,
-        "onlosecapture": true,
-        "ondatasetchanged": true,
-        "ondrop": true,
-        "onselect": true,
-        "onmousewheel": true,
-        "onbeforeunload": true,
-        "onafterprint": true,
-        "onhashchange": true,
-        "onbeforeprint": true,
-        "onoffline": true,
-        "ononline": true,
-        "onunload": true
-    };
+        off,
+        one;
+   
     var isSupportCustomEvent = window.CustomEvent ? true : false;
     // https://github.com/krambuhl/custom-event-polyfill/blob/master/custom-event-polyfill.js
     // Polyfill for creating CustomEvents on IE9/10/11
@@ -162,10 +89,10 @@
         }
         // fire
         if (element[eventName]) {
-            element[eventName](evt); // 是否需要传递evt?
+            element[eventName](evt);
         } else if (element['on' + eventName]) {
-            element['on' + eventName](evt); // 是否需要传递evt?
-        } else if (element.fireEvent && htmlEvents['on' + eventName]) {
+            element['on' + eventName](evt); 
+        } else if (element.fireEvent && ('on' + eventName) in element) { //针对IE8及以下版本，fireEvent|attachEvent|detachEvent只能使用如下事件名
             element.fireEvent('on' + eventName, evt);
         }
         return evt;
@@ -175,7 +102,7 @@
             addEvent = function(element, eventName, handler) {
                 element.addEventListener(eventName, handler, false);
             }
-        } else if (window.attachEvent && htmlEvents['on' + eventName]) {
+        } else if (window.attachEvent && ('on' + eventName) in element) {
             addEvent = function(element, eventName, handler) {
                 element.attachEvent('on' + eventName, handler);
             }
@@ -185,13 +112,14 @@
             }
         }
         addEvent(element, eventName, handler);
+
     };
     removeEvent = function(element, eventName, handler) {
         if (window.removeEventListener) {
             removeEvent = function(element, eventName, handler) {
                 element.removeEventListener(eventName, handler, false);
             }
-        } else if (window.attachEvent && htmlEvents['on' + eventName]) {
+        } else if (window.attachEvent && ('on' + eventName) in element) {
             removeEvent = function(element, eventName, handler) {
                 element.detachEvent('on' + eventName, handler);
             }
