@@ -1,8 +1,8 @@
 /**
- * customEvents
+ * customevt
  * 
  * @description 
- * customEvents is a cross-browser custom evetns library in vanilla javascript without any frameworks
+ * customevt is a cross-browser custom evetns library in vanilla javascript without any frameworks
  * 
  * @method 
  * fireEvent
@@ -10,16 +10,15 @@
  * removeEvent
  * 
  * @example
- * customEvents.addEvent(window.document.body, 'test', function(e){alert('test')});	
- * customEvents.fireEvent(window.document.body, 'test');
+ * customevt.addEvent(window.document.body, 'test', function(e){alert('test')});    
+ * customevt.fireEvent(window.document.body, 'test');
  * 
  */
-
-var customEvents = function() {
+(function(win, customevt) {
     var fireEvent,
         addEvent,
         removeEvent;
-    // 针对IE8以下版本，fireEvent|attachEvent|detachEvent只能使用如下事件名
+    // 针对IE8及以下版本，fireEvent|attachEvent|detachEvent只能使用如下事件名
     var htmlEvents = {
         "onbeforeeditfocus": true,
         "onbeforeactivate": true,
@@ -148,6 +147,7 @@ var customEvents = function() {
         if (element.dispatchEvent) {
             element.dispatchEvent(evt);
         }
+        return evt;
     } : function(element, eventName, params) {
         var evt = document.createEventObject();
         evt.type = eventName;
@@ -162,12 +162,13 @@ var customEvents = function() {
         }
         // fire
         if (element[eventName]) {
-            element[eventName]();
+            element[eventName](evt); // 是否需要传递evt?
         } else if (element['on' + eventName]) {
-            element['on' + eventName]();
+            element['on' + eventName](evt); // 是否需要传递evt?
         } else if (element.fireEvent && htmlEvents['on' + eventName]) {
             element.fireEvent('on' + eventName, evt);
         }
+        return evt;
     };
     addEvent = function(element, eventName, handler) {
         if (window.addEventListener) {
@@ -201,10 +202,11 @@ var customEvents = function() {
         }
         removeEvent(element, eventName, handler);
     };
+    
+    customevt.fireEvent = fireEvent;
+    customevt.addEvent = addEvent;
+    customevt.removeEvent =removeEvent;
 
-    return {
-        fireEvent: fireEvent,
-        addEvent: addEvent,
-        removeEvent: removeEvent
-    }
-}();
+})(window, window['customevt'] || (window['customevt'] = {}));
+
+// module.exports = customevt;

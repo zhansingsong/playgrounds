@@ -1,0 +1,17 @@
+{
+  "name": "customEvent",
+  "version": "1.0.0",
+  "description": "customEvent",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "customEvent"
+  ],
+  "author": "zhansingsong",
+  "license": "MIT"
+}
