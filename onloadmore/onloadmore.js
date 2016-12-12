@@ -1,18 +1,12 @@
 /**
- * onloadmore :　loadmore event detection
- * onloadmore事件
+ * loadmore :　loadmore event detection
+ * loadmore事件
  */
 ;
-(function(win, pl) {
+(function(win) {
     var meta = {},
         cbs = [],
         timer;
-
-    var html = document.documentElement;
-    // hasScrollbar
-    var hasScrollbar = function(){
-
-    }
     // 订阅与发布
     var event = function() {
         var fnlist = {},
@@ -36,11 +30,11 @@
                 return false;
             }
             for (var i = 0, fn; fn = fns[i++];) {
-            		if(!fn['__called__']){
-                	fn.apply(this, arguments);
-            		}
-                if(fn['__one__']){
-                	fn['__called__'] = true;
+                if (!fn['__called__']) {
+                    fn.apply(this, arguments);
+                }
+                if (fn['__one__']) {
+                    fn['__called__'] = true;
                 }
             }
         };
@@ -59,8 +53,8 @@
                 }
             }
         };
-        one = function(type, fn){
-        	listen(type, fn, true);
+        one = function(type, fn) {
+            listen(type, fn, true);
         }
         return {
             listen: listen,
@@ -70,87 +64,64 @@
         }
     }();
 
-    // onloadmore
-    function Loadmore(options){
-    
+    // loadmore
+    function Loadmore(element, type, handler) {
+        this.element = element;
+        this.type = type;
+        this.handler = handler;
+        this.init();
     }
-    Loadmore.prototype.init = function(){
-    	
-    }
-   	var scrollCB = function(){
-    
-   	}
+    Loadmore.prototype.init = function() {
 
-    // automatically load css script
-    function loadStyleString(css) {
-        var _style = document.createElement('style'),
-            _head = document.head ? document.head : document.getElementsByTagName('head')[0];
-        _style.type = 'text/css';
-        try {
-            _style.appendChild(document.createTextNode(css));
-        } catch (ex) {
-            // lower IE support, if you want to know more about this to see http://www.quirksmode.org/dom/w3c_css.html
-            _style.styleSheet.cssText = css;
+        function isWindow(o) {
+            var winString = {
+                "[object Window]": 1,
+                "[object DOMWindow]": 1,
+                "[object global]": 1
+            };
+            var toString = Object.prototype.toString;
+            if (!o || typeof o !== "object") {
+                return false;
+            }
+            return !!winString[toString.call(o)];
         }
-        _head.appendChild(_style);
-        return _style;
-    }
+        var me = this;
+        var scrollCB = function(evt) {
+            var target = evt.currentTarget,
+                _isWindow = isWindow(target),
+                _clientHeight = _isWindow ? target.innerHeight : target.clientHeight,
+                _scrollHeight = _isWindow ? document.documentElement.scrollHeight : target.scrollHeight,
+                _triggerHeight = Number(me.type || '200'),
+                _st = _isWindow ? target.pageYOffset : target.scrollTop,
+                _currentHeight = _clientHeight + _st;
 
-    // callback
-    var resizeCB = function() {
-        var hstyle = win.getComputedStyle(html, null),
-            ffstr = hstyle['font-family'],
-            pstr = "portrait, " + ffstr,
-            lstr = "landscape, " + ffstr,
-            cssstr = '@media (orientation: portrait) { .orientation{font-family:' + pstr + ';} } @media (orientation: landscape) {  .orientation{font-family:' + lstr + ';}}';
-        meta.font = ffstr;
-        // 载入样式		
-        loadStyleString(cssstr);
-        // 添加类
-        html.className = 'orientation' + html.className;
-        if (hstyle['font-family'] === pstr) { //初始化判断
-            meta.init = 'portrait';
-            meta.current = 'portrait';
-        } else {
-            meta.init = 'landscape';
-            meta.current = 'landscape';
+            if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
+                event.trigger('__loadmore__');
+            }
+            console.log('outer');
+            scrollCB = function(evt) {
+                _currentHeight = _clientHeight + target.scrollTop;
+                if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
+                    event.trigger('__loadmore__');
+                }
+                console.log('inner');
+            }
+        }
+
+        function bindEvent() {
+            this.element.addEventListener('scroll', scrollCB, false);
+            event.listen('__loadmore__', function() {
+                handler.call(me);
+            });
         }
         return function() {
-            if (hstyle['font-family'] === pstr) {
-                if (meta.current !== 'portrait') {
-                    meta.current = 'portrait';
-                    event.trigger('__orientationChange__', meta);
-                }
-            } else {
-                if (meta.current !== 'landscape') {
-                    meta.current = 'landscape';
-                    event.trigger('__orientationChange__', meta);
-                }
-            }
+            bindEvent.call(this);
         }
     }();
-    // 监听
-    win.addEventListener('resize', function() {
-        timer && win.clearTimeout(timer);
-        timer = win.setTimeout(resizeCB, 300);
-    }, false);
 
-    event.listen('__orientationChange__', function(event) {
-        if (cbs.length === 0) {
-            return false;
-        }
-        for (var i = 0, cb; cb = cbs[i++];) {
-            if (typeof cb === 'function') {
-                cb.call(pl, event);
-            } else {
-                throw new Error('The accepted argument of pl.on must be a function.');
-            }
-        }
-    });
-    // 接口
-    pl.orientation = meta;
-    pl.event = event;
-    pl.on = function(cb) {
-        cbs.push(cb);
+
+    win.loadmore = function(element, type, handler) {
+        (new Loadmore(element, type, handler));
     }
-})(window, window['pl'] || (window['pl'] = {}));
+
+})(window);
