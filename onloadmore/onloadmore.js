@@ -3,14 +3,13 @@
  * loadmore事件
  */
 ;
-(function(win) {
-    var meta = {},
-        cbs = [],
-        timer;
+(function(win, loadmore) {
     // 订阅与发布
-    var event = function() {
-        var fnlist = {},
-            listen,
+    function Evt() {
+        this.fnlist = {};
+    }
+    Evt.prototype = function() {
+        var listen,
             trigger,
             remove,
             one;
@@ -19,13 +18,13 @@
         listen = function(type, fn, one) {
             fn['__one__'] = one;
             fn['__called__'] = false;
-            (fnlist[type] || (fnlist[type] = [])).push(fn);
+            (this.fnlist[type] || (this.fnlist[type] = [])).push(fn);
             return fn;
         };
 
         trigger = function(type) {
             var key = shift.call(arguments),
-                fns = fnlist[key];
+                fns = this.fnlist[key];
             if (!fns || fns.length === 0) {
                 return false;
             }
@@ -39,7 +38,7 @@
             }
         };
         remove = function(type, fn) {
-            var fns = fnlist[type];
+            var fns = this.fnlist[type];
             if (!fns) {
                 return false;
             }
@@ -69,10 +68,11 @@
         this.element = element;
         this.type = type;
         this.handler = handler;
+        this.event = new Evt();
+        this.scrollCB = null;
         this.init();
     }
-    Loadmore.prototype.init = function() {
-
+    Loadmore.prototype = function() {
         function isWindow(o) {
             var winString = {
                 "[object Window]": 1,
@@ -85,43 +85,69 @@
             }
             return !!winString[toString.call(o)];
         }
-        var me = this;
-        var scrollCB = function(evt) {
-            var target = evt.currentTarget,
-                _isWindow = isWindow(target),
-                _clientHeight = _isWindow ? target.innerHeight : target.clientHeight,
-                _scrollHeight = _isWindow ? document.documentElement.scrollHeight : target.scrollHeight,
-                _triggerHeight = Number(me.type || '200'),
-                _st = _isWindow ? target.pageYOffset : target.scrollTop,
-                _currentHeight = _clientHeight + _st;
+        function callback(evt){
+        	// scrollCB.call(me, event);
+        	if (!me.scrollCB) {
+        	    me.scrollCB = function() {
+        	        var target = evt.currentTarget,
+        	            _isWindow = isWindow(target),
+        	            _clientHeight = _isWindow ? target.innerHeight : target.clientHeight,
+        	            _scrollHeight = _isWindow ? document.documentElement.scrollHeight : target.scrollHeight,
+        	            _triggerHeight = Number(this.type || '200'),
+        	            _st = _isWindow ? target.pageYOffset : target.scrollTop,
+        	            _currentHeight = _clientHeight + _st;
 
-            if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
-                event.trigger('__loadmore__');
-            }
-            console.log('outer');
-            scrollCB = function(evt) {
-                _currentHeight = _clientHeight + target.scrollTop;
-                if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
-                    event.trigger('__loadmore__');
-                }
-                console.log('inner');
-            }
+        	        if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
+        	            this.event.trigger('__loadmore__');
+        	        }
+        	        return function() {
+        	            _st = _isWindow ? target.pageYOffset : target.scrollTop;
+        	            _currentHeight = _clientHeight + _st;
+        	            console.log(target.toString() + ': ' + '_scrollHeight=' + _scrollHeight + ' , _clientHeight=' + _clientHeight + ', _currentHeight=' + _currentHeight + ', _triggerHeight=' + _triggerHeight);
+        	            if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
+        	                this.event.trigger('__loadmore__');
+        	            }
+        	            console.log('inner');
+        	        }
+        	    }();
+        	} else {
+        	    me.scrollCB();
+        	}
         }
-
         function bindEvent() {
-            this.element.addEventListener('scroll', scrollCB, false);
-            event.listen('__loadmore__', function() {
-                handler.call(me);
+            var me = this;
+            var callback = 
+            this.element.addEventListener('scroll', callback.bind(me), false);
+            this.event.listen('__loadmore__', function() {
+                me.handler.call(me);
             });
         }
-        return function() {
-            bindEvent.call(this);
+        return {
+            init: function() {
+                bindEvent.call(this);
+            },
+            destory: function() {
+                this.event.remove('__loadmore__');
+                this.element.removeEventListener('scroll', scrollCB);
+                this.event = null;
+                this.element = null;
+                this.handler = null;
+                this.type == void 0;
+            }
         }
     }();
 
 
-    win.loadmore = function(element, type, handler) {
-        (new Loadmore(element, type, handler));
+    win.loadmore.on = function(element, type, handler) {
+    	!element.loadmore && (element.loadmore = {});
+    	element.loadmore[type] =  new Loadmore(element, type, handler);
+    	element.loadmore[type].init();
     }
-
-})(window);
+    win.loadmore.off = function(element, type){
+			if(!element.loadmore && !element.loadmore[type]){
+				return false;
+			}	
+			element.loadmore[type].destory();
+			delete element.loadmore;
+    }
+})(window, window['loadmore'] || (window['loadmore'] = {}));
