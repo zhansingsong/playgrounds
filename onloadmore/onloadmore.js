@@ -6,6 +6,10 @@
  * window.loadmore.on(window, '400', function(){console.log('test')});
  * 注销
  * window.loadmore.off(window, '400');
+ * 
+ * 注意不仅限于window，loadmore对其他对象也适用哦~~~
+ * window.loadmore.on(element, '400', function(){console.log('test')});
+ * window.loadmore.off(element, '400');
  */
 ;
 (function(win, loadmore) {
