@@ -58,7 +58,7 @@
             listen(type, fn, true);
         }
         return {
-        		constructor: Evt,
+            constructor: Evt,
             listen: listen,
             trigger: trigger,
             remove: remove,
@@ -75,7 +75,7 @@
         // this.init();
     }
     Loadmore.prototype = function() {
-    		// 判断是否Window对象
+        // 判断是否Window对象
         function isWindow(o) {
             var winString = {
                 "[object Window]": 1,
