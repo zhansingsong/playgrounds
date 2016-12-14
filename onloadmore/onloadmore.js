@@ -149,7 +149,12 @@
         if (!element['__loadmoreObject__'] && !element['__loadmoreObject__'][type]) {
             return false;
         }
-        element['__loadmoreObject__'][type].destory();
-        delete element['__loadmoreObject__'];
+        try {
+            element['__loadmoreObject__'][type].destory();
+            return (delete element['__loadmoreObject__']);
+        } catch (error) {
+            throw error;
+        }
+
     }
 })(window, window['loadmore'] || (window['loadmore'] = {}));
