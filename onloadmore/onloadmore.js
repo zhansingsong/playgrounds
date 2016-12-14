@@ -1,6 +1,11 @@
 /**
- * loadmore :　loadmore event detection
- * loadmore事件
+ * loadmore event(loadmore事件)
+ *
+ * @example
+ * 注册
+ * window.loadmore.on(window, '400', function(){console.log('test')});
+ * 注销
+ * window.loadmore.off(window, '400');
  */
 ;
 (function(win, loadmore) {
@@ -9,10 +14,7 @@
         this.fnlist = {};
     }
     Evt.prototype = function() {
-        var listen,
-            trigger,
-            remove,
-            one;
+        var listen, trigger, remove, one;
         var shift = Array.prototype.shift;
 
         listen = function(type, fn, one) {
@@ -56,6 +58,7 @@
             listen(type, fn, true);
         }
         return {
+        		constructor: Evt,
             listen: listen,
             trigger: trigger,
             remove: remove,
@@ -69,10 +72,10 @@
         this.type = type;
         this.handler = handler;
         this.event = new Evt();
-        this.scrollCB = null;
-        this.init();
+        // this.init();
     }
     Loadmore.prototype = function() {
+    		// 判断是否Window对象
         function isWindow(o) {
             var winString = {
                 "[object Window]": 1,
@@ -85,41 +88,41 @@
             }
             return !!winString[toString.call(o)];
         }
-        function callback(evt){
-        	// scrollCB.call(me, event);
-        	if (!me.scrollCB) {
-        	    me.scrollCB = function() {
-        	        var target = evt.currentTarget,
-        	            _isWindow = isWindow(target),
-        	            _clientHeight = _isWindow ? target.innerHeight : target.clientHeight,
-        	            _scrollHeight = _isWindow ? document.documentElement.scrollHeight : target.scrollHeight,
-        	            _triggerHeight = Number(this.type || '200'),
-        	            _st = _isWindow ? target.pageYOffset : target.scrollTop,
-        	            _currentHeight = _clientHeight + _st;
-
-        	        if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
-        	            this.event.trigger('__loadmore__');
-        	        }
-        	        return function() {
-        	            _st = _isWindow ? target.pageYOffset : target.scrollTop;
-        	            _currentHeight = _clientHeight + _st;
-        	            console.log(target.toString() + ': ' + '_scrollHeight=' + _scrollHeight + ' , _clientHeight=' + _clientHeight + ', _currentHeight=' + _currentHeight + ', _triggerHeight=' + _triggerHeight);
-        	            if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
-        	                this.event.trigger('__loadmore__');
-        	            }
-        	            console.log('inner');
-        	        }
-        	    }();
-        	} else {
-        	    me.scrollCB();
-        	}
-        }
+        // 绑定事件
         function bindEvent() {
             var me = this;
-            var callback = 
-            this.element.addEventListener('scroll', callback.bind(me), false);
-            this.event.listen('__loadmore__', function() {
-                me.handler.call(me);
+            var scrollCB = null;
+
+            this.element['__loadmoreObject__'] = this.element['__loadmoreObject__'] || {};
+            this.element['__loadmoreObject__']['__loadmoreScrollCB__'] = function(evt) {
+                if (!scrollCB) {
+                    scrollCB = function() {
+                        var target = evt.currentTarget,
+                            _isWindow = isWindow(target),
+                            _clientHeight = _isWindow ? target.innerHeight : target.clientHeight,
+                            _scrollHeight = _isWindow ? document.documentElement.scrollHeight : target.scrollHeight,
+                            _triggerHeight = Number(me.type || '200'),
+                            _st = _isWindow ? target.pageYOffset : target.scrollTop,
+                            _currentHeight = _clientHeight + _st;
+
+                        if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
+                            me.event.trigger('__loadmoreEvent__');
+                        }
+                        return function() {
+                            _st = _isWindow ? target.pageYOffset : target.scrollTop;
+                            _currentHeight = _clientHeight + _st;
+                            if (_scrollHeight > _clientHeight && (_scrollHeight - _currentHeight <= _triggerHeight)) {
+                                me.event.trigger('__loadmoreEvent__');
+                            }
+                        }
+                    }();
+                } else {
+                    scrollCB();
+                }
+            }
+            this.element.addEventListener('scroll', this.element['__loadmoreObject__']['__loadmoreScrollCB__'], false);
+            this.event.listen('__loadmoreEvent__', function() {
+                me.handler();
             });
         }
         return {
@@ -127,8 +130,8 @@
                 bindEvent.call(this);
             },
             destory: function() {
-                this.event.remove('__loadmore__');
-                this.element.removeEventListener('scroll', scrollCB);
+                this.event.remove('__loadmoreEvent__');
+                this.element.removeEventListener('scroll', this.element['__loadmoreObject__']['__loadmoreScrollCB__'], false);
                 this.event = null;
                 this.element = null;
                 this.handler = null;
@@ -137,17 +140,16 @@
         }
     }();
 
-
     win.loadmore.on = function(element, type, handler) {
-    	!element.loadmore && (element.loadmore = {});
-    	element.loadmore[type] =  new Loadmore(element, type, handler);
-    	element.loadmore[type].init();
+        !element['__loadmoreObject__'] && (element['__loadmoreObject__'] = {});
+        element['__loadmoreObject__'][type] = new Loadmore(element, type, handler);
+        element['__loadmoreObject__'][type].init();
     }
-    win.loadmore.off = function(element, type){
-			if(!element.loadmore && !element.loadmore[type]){
-				return false;
-			}	
-			element.loadmore[type].destory();
-			delete element.loadmore;
+    win.loadmore.off = function(element, type) {
+        if (!element['__loadmoreObject__'] && !element['__loadmoreObject__'][type]) {
+            return false;
+        }
+        element['__loadmoreObject__'][type].destory();
+        delete element['__loadmoreObject__'];
     }
 })(window, window['loadmore'] || (window['loadmore'] = {}));
