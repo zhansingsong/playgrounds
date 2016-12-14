@@ -91,7 +91,7 @@
         // 绑定事件
         function bindEvent() {
             var me = this;
-            var scrollCB = null;
+            var scrollCB = null; //用于初始化
 
             this.element['__loadmoreObject__'] = this.element['__loadmoreObject__'] || {};
             this.element['__loadmoreObject__']['__loadmoreScrollCB__'] = function(evt) {
@@ -135,7 +135,7 @@
                 this.event = null;
                 this.element = null;
                 this.handler = null;
-                this.type == void 0;
+                this.type = void 0;
             }
         }
     }();
