@@ -219,7 +219,7 @@ function init(modules) {
     }
     // 如果data中存在vnode，那么直接替换？data缓存了vnode?
     if (isDef(i = oldVnode.data) && isDef(i = i.vnode)) oldVnode = i;
-    if (isDef(i = vnode.data) && isDef(i = i.vnode)) vnode = i;
+    if (isDef(i = vnode.data) && isDef(i = i.vnode)) vnode = i;//隐藏特性？
 
     var elm = vnode.elm = oldVnode.elm, oldCh = oldVnode.children, ch = vnode.children;
     // 相等直接返回
