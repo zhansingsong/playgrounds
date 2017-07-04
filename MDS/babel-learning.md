@@ -3,17 +3,17 @@
 >
 > babel的松散模式会将**ES6**代码转换为非严格**ES6**语义化的**ES5**代码.
 
-### normal and loose mode
+### normal and loose mode
 
 Babel支持两种模式：**normal**、**loose**
 
-- **normal** : 尽可能地遵行**ES6**的语义化规范来转换代码
+- **normal** : 尽可能地遵行**ES6**的语义化规范来转换代码
 - **loose** : 与**normal**相反，不遵行**ES6**语义化，生成较简洁的**ES5**代码
 
-通常是不推荐使用**loose mode**
+通常是不推荐使用**loose mode**
 ### loose mode优缺点
 - 优点 : 生成的代码更加简洁，速度更快，兼容性更好。 
-- 缺点 : 当将转译过的**ES6**代码转为**native ES6**时，可能会有问题。
+- 缺点 : 当将转译过的**ES6**代码转为**native ES6**时，可能会有问题。
 ### 开启loose mode
 - presets
 ```json
@@ -36,7 +36,7 @@ Babel支持两种模式：**normal**、**loose**
 }
 ```
 ### DEMO
-这里通过一段代码，分别开启normal、loose模式，对比生成的代码。代码如下：
+这里通过一段代码，分别开启normal、loose模式，对比生成的代码。代码如下：
 ```js
 class Point {
     constructor(x, y) {
@@ -50,7 +50,7 @@ class Point {
 ```
 #### 1. normal mode
 
-在normal模式下，类的原型方法是通过`Object.defineProperty()`来添加的，完全遵行ES6规范，确保不可枚举。
+在normal模式下，类的原型方法是通过`Object.defineProperty()`来添加的，完全遵行ES6规范，确保不可枚举。
 
 ```js
 "use strict";
@@ -99,7 +99,7 @@ var Point = (function () {
 ```
 #### 2. loose mode
 
-在loose模式下，通过赋值语句来添加方法。风格就像手工书写的ES5代码一样。
+在loose模式下，通过赋值语句来添加方法。风格就像手工书写的ES5代码一样。
 
 ```js
 "use strict";
