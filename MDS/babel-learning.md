@@ -8,7 +8,7 @@
 Babel支持两种模式：**normal**、**loose**
 
 - **normal** : 尽可能地遵行**ES6**的语义化规范来转换代码
-- **loose** : 与**normal**相反，不遵行**ES6**语义化，生成较简洁的**ES5**代码
+- **loose** : 与**normal**相反，不遵行**ES6**语义化，生成较简洁的**ES5**代码
 
 通常是不推荐使用**loose mode**
 ### loose mode优缺点
