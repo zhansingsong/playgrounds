@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Converted from: 关于containing-block.md</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+</head>
+<body>
+
+<h1 id="heading.51734e8econtaining-block768490a34e9b4e8b">关于containing-block的那些事</h1>
+<h3 id="heading.4ec04e48662fcontaining-block3f">什么是containing-block?</h3>
+<blockquote>
+<p>The size and position of an element are often impacted by its containing block. Most often, the containing block is the content area of an element’s nearest block-level ancestor, but this is not always the case. -MDN</p>
+</blockquote>
+<p>简单地说，containing-block就是一容器，用于布局和大小的计算，它一般是一个元素最近的块级父节点的<strong>content area</strong>（但不总是哦……）</p>
+<p><img src="https://d2mxuefqeaa7sj.cloudfront.net/s_B3933F1CAEB89DA4EDCA442D5BACE6682180AB23F892E68B39E5A56D2034679C_1496411178061_boxdim.png" alt="" /></p>
+<h3 id="heading.4e3a4ec04e488bc6522b4e004e2a51437d2076842a2acontaining-block2a2a662f5f8891cd89817684ff1f">为什么识别一个元素的<strong>containing-block</strong>是很重要的？</h3>
+<p>因为元素的大小计算和定位需要依赖于<strong>containing-block</strong>。如绝对定位元素的width、height、padding、margin和offset属性的百分值需要参考元素的containing-block来计算。</p>
+<h3 id="heading.600e4e48683753bb8bc6522b4e004e2a51437d2076842a2acontaining-block2a2aff1f">怎么样去识别一个元素的<strong>containing-block</strong>？</h3>
+<p>识别元素containing-block的过程，完全取决于元素的<strong>position</strong>属性值：</p>
+<ol>
+<li>
+<p>如果元素的<strong>position</strong>属性值为<strong>static</strong>和<strong>relative</strong>，其<strong>cotaining-block</strong>是其最近的父节点的<strong>content box</strong>(即content area)，该父节点可能是一个<strong>block container</strong>(如一个inline-block、block、或list-item元素)，或<strong>formatting context</strong>(如table、flex、grid或block container)</p>
+</li>
+<li>
+<p>如果元素的<strong>position</strong>属性值为<strong>absolute</strong>，其<strong>cotaining-block</strong>是其最近的父节点的<strong>padding box</strong>(即content area + padding)，该父元素的position属性值为除<strong>static</strong>外的值（fixed、absolute、relative、或sticky）</p>
+</li>
+<li>
+<p>如果元素的<strong>position</strong>属性值为<strong>fixed</strong>，其<strong>cotaining-block</strong>在<strong>continuous media</strong>（连续media）情况下是<a href="https://developer.mozilla.org/en-US/docs/Glossary/viewport">viewport</a>，在<strong>paged media</strong>(分页media)情况下是<strong>page area</strong>(页面区域)</p>
+</li>
+<li>
+<p>如果元素的<strong>position</strong>属性值为<strong>absolute</strong>或<strong>fixed</strong>，其<strong>containing-block</strong>是其最近的父节点的<strong>padding box</strong>(即content area + padding)，该父元素需要满足如下条件之一：</p>
+<ul>
+<li>有<strong>transform</strong>或<strong>perspective</strong>属性，且值为除none外的值</li>
+<li>有<strong>will-change</strong>属性，且值为<strong>transform</strong>或<strong>perspective</strong></li>
+<li>有<strong>filter</strong>属性，且值为除none外的值；或有<strong>will-change</strong>属性，且值为<strong>filter</strong>(仅在Firefox中工作)</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>根元素（html）所在的<strong>containing-block</strong>是一个被称为<strong>initial containing-block</strong>的矩形框。大小在<strong>continuous media</strong>（连续media）情况下等于<a href="https://developer.mozilla.org/en-US/docs/Glossary/viewport">viewport</a>的大小，在<strong>paged media</strong>(分页media)情况下等于<strong>page area</strong>(页面区域)的大小</p>
+</blockquote>
+<h3 id="heading.76f85bf94e8e2a2acontaining-block2a2a67658ba17b975c5e60277684767e52066bd4503c">相对于<strong>containing-block</strong>来计算属性的百分比值</h3>
+<p>如上所述，当元素的某个属性的值为百分比时，其该属性的计算值是相对于元素的<strong>containing-block</strong>来计算的。盒模型属性和offset属性都是以这种方式来计算的：</p>
+<ol>
+<li>元素的height、top和bottom都是相对于其<strong>containing-block</strong>的height来计算。如果元素的height取决于其内容，并且<strong>containing-block</strong>的<strong>position</strong>属性值为<strong>relative</strong>或<strong>static</strong>，那么这些为0</li>
+<li>元素的width、left、right、padding和margin相对于其<strong>containing-block</strong>的width来计算</li>
+</ol>
+<h3 id="heading.5b9e4f8b">实例</h3>
+<p>html code:</p>
+<pre><code class="language-HTML">&lt;body&gt;
+  &lt;section&gt;
+    &lt;p&gt;This is a paragraph!&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/body&gt;
+</code></pre>
+<h4 id="heading.example1">example1</h4>
+<p>该实例中，<code>&lt;p&gt;</code>标签是默认布局<code>position:static</code>，所以其<strong>containing-block</strong>是<code>&lt;section&gt;</code>标签的<strong>content area</strong>，因为<code>&lt;p&gt;</code>标签最近<strong>containing-block</strong>是父节点<code>&lt;section&gt;</code>，它是块级元素<code>display:block</code>。只要满足<strong>block container</strong>(如一个inline-block、block、或list-item元素)，或<strong>formatting context</strong>(如table、flex、grid或block container)即可</p>
+<pre><code class="language-css">body {
+  background: beige;
+}
+
+section {
+  display: block;/*inline-block, list-item, table, flex, grid*/
+  width: 400px;
+  height: 160px;
+  background: lightgray;
+}
+
+p {
+  width: 50%;   /* == 400px * .5 = 200px */
+  height: 25%;  /* == 160px * .25 = 40px */
+  margin: 5%;   /* == 400px * .05 = 20px */
+  padding: 5%;  /* == 400px * .05 = 20px */
+  background: cyan;
+}
+</code></pre>
+<p>codepen:</p>
+<iframe height='265' scrolling='no' title='containing-block-example1' src='//codepen.io/zhansingsong/embed/ayKqyd/?height=265&theme-id=0&default-tab=css,result&embed-version=2' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='https://codepen.io/zhansingsong/pen/ayKqyd/'>containing-block-example1</a> by zhansingsong (<a href='https://codepen.io/zhansingsong'>@zhansingsong</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+<p>如果将<code>&lt;section&gt;</code>标签样式修改为：</p>
+<pre><code class="language-css">section {
+  display: inline;
+  background: lightgray;
+}
+</code></pre>
+<p>则此时<code>&lt;p&gt;</code>标签的<strong>containing-block</strong>为<code>&lt;body&gt;</code>标签。</p>
+<h4 id="heading.example2">example2</h4>
+<p>该实例中，<code>&lt;p&gt;</code>标签布局为<code>position:absolute</code>，所以其<strong>containing-block</strong>是的<code>&lt;section&gt;</code>标签的<strong>padding area(content area + padding)</strong>。因为<code>&lt;section&gt;</code>标签有<code>position:absolute</code>，只要满足position属性值为除<strong>static</strong>外的值（fixed、absolute、relative、或sticky）</p>
+<pre><code class="language-css">body {
+  background: beige;
+}
+
+section {
+  position: absolute;/* fixed、relative、或sticky */
+  left: 30px;
+  top: 30px;
+  width: 400px;
+  height: 160px;
+  padding: 30px 20px;
+  background: lightgray;
+}
+
+p {
+  position: absolute;
+  width: 50%;   /* == (400px + 20px + 20px) * .5 = 220px */
+  height: 25%;  /* == (160px + 30px + 30px) * .25 = 55px */
+  margin: 5%;   /* == (400px + 20px + 20px) * .05 = 22px */
+  padding: 5%;  /* == (400px + 20px + 20px) * .05 = 22px */
+  background: cyan;
+}
+</code></pre>
+<p>codepen:</p>
+<iframe height='265' scrolling='no' title='containing-block-example2' src='//codepen.io/zhansingsong/embed/OjEZJy/?height=265&theme-id=0&default-tab=css,result&embed-version=2' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='https://codepen.io/zhansingsong/pen/OjEZJy/'>containing-block-example2</a> by zhansingsong (<a href='https://codepen.io/zhansingsong'>@zhansingsong</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+<h4 id="heading.example3">example3</h4>
+<p>该实例中，<code>&lt;p&gt;</code>标签布局为<code>position:fixed</code>，所以其<strong>containing-block</strong>是的<strong>initial containing-block</strong>的<a href="https://developer.mozilla.org/en-US/docs/Glossary/viewport">viewport</a></p>
+<pre><code class="language-css">body {
+  background: beige;
+}
+
+section {
+  width: 400px;
+  height: 480px;
+  margin: 30px;
+  padding: 15px;
+  background: lightgray;
+}
+
+p {
+  position: fixed;
+  width: 50%;   /* == (50vw - (width of vertical scrollbar)) */
+  height: 50%;  /* == (50vh - (height of horizontal scrollbar)) */
+  margin: 5%;   /* == (5vw - (width of vertical scrollbar)) */
+  padding: 5%;  /* == (5vw - (width of vertical scrollbar)) */
+  background: cyan;
+}
+</code></pre>
+<p>codepen:</p>
+<iframe height='265' scrolling='no' title='containing-block-example3' src='//codepen.io/zhansingsong/embed/vJrjLB/?height=265&theme-id=0&default-tab=css,result&embed-version=2' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='https://codepen.io/zhansingsong/pen/vJrjLB/'>containing-block-example3</a> by zhansingsong (<a href='https://codepen.io/zhansingsong'>@zhansingsong</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+<h4 id="heading.example4">example4</h4>
+<p>该实例中，<code>&lt;p&gt;</code>标签布局为<code>position:absolute</code>，所以其<strong>containing-block</strong>是的<code>&lt;section&gt;</code>标签的<strong>padding area(content area + padding)</strong>。因为<code>&lt;section&gt;</code>标签有<code>transform: rotate(0deg);</code>，只要<code>&lt;section&gt;</code>标签满足如下条件之一即可：</p>
+<ul>
+<li>有<strong>transform</strong>或<strong>perspective</strong>属性，且值为除none外的值</li>
+<li>有<strong>will-change</strong>属性，且值为<strong>transform</strong>或<strong>perspective</strong></li>
+<li>有<strong>filter</strong>属性，且值为除none外的值；或有<strong>will-change</strong>属性，且值为<strong>filter</strong>(仅在Firefox中工作)</li>
+</ul>
+<pre><code class="language-css">body {
+  background: beige;
+}
+
+section {
+  transform: rotate(0deg);
+  /* will-change: transform; */
+  /* perspective: 0.1px; */
+  /* will-change:perspective; */
+  width: 400px;
+  height: 160px;
+  background: lightgray;
+}
+
+p {
+  position: absolute;
+  left: 80px;
+  top: 30px;
+  width: 50%;   /* == 200px */
+  height: 25%;  /* == 40px */
+  margin: 5%;   /* == 20px */
+  padding: 5%;  /* == 20px */
+  background: cyan;
+}
+
+</code></pre>
+<p>codepen:</p>
+<iframe height='265' scrolling='no' title='containing-block-example4' src='//codepen.io/zhansingsong/embed/rzKvMK/?height=265&theme-id=0&default-tab=css,result&embed-version=2' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'>See the Pen <a href='https://codepen.io/zhansingsong/pen/rzKvMK/'>containing-block-example4</a> by zhansingsong (<a href='https://codepen.io/zhansingsong'>@zhansingsong</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+<h3 id="heading.53c2800365877ae0ff1a">参考文章：</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/position">All about the containing block</a></li>
+</ul>
+
+
+</body>
+</html>
