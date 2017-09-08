@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>async-vs-defer-demo</title>
+  <script src="./demo.js" defer></script>
+</head>
+<body>
+    <h2 style="color:crimson">说明</h2>
+    <p style="color:brown;text-decoration:underline;"><strong>demo.js脚本带defer特性，会在下载完后会等待HTML解析完后再执行脚本。该实例表现为：在demo.js脚本下载完后，一直等待最后一个p标签元素解析完，再执行demo.js（脚本中加了debugger字段，方便查看）</strong></p>
+  <p>script加载完之前</p>
+  <script src="http://upd13.sogoucdn.com/nstatic/js/common.js?v=2"></script>
+  <script src="http://upd10.sogoucdn.com/nstatic/js/sa_v1.0.3.js"></script>
+  <script>console.log('代码执行完')</script>
+  <p>script加载完之后</p>
+</body>
+</html>
